@@ -31,6 +31,9 @@
   - Shipping Dept
 - DepartmentName: HR & GA
   SubList:
+  - HR
+  - GA
+  - HR Dept
   - HRD
   - Human Resource
   - Human Resources
