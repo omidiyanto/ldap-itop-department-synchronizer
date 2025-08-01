@@ -111,7 +111,7 @@ func SyncUsersToTeams(usersCSV, yamlPath, notSyncedCSV string, client *itopclien
 	}
 	userCh := make(chan UserCSV)
 	resultCh := make(chan syncResult)
-	numWorkers := 50 // adjust as needed
+	numWorkers := 100 // adjust as needed
 
 	// Worker function
 	worker := func() {
@@ -171,7 +171,12 @@ func SyncUsersToTeams(usersCSV, yamlPath, notSyncedCSV string, client *itopclien
 								if pl, ok := fields["persons_list"].([]interface{}); ok {
 									for _, p := range pl {
 										if pm, ok := p.(map[string]interface{}); ok {
-											personsList = append(personsList, pm)
+											// Only keep person_id and role_id fields to avoid read-only/friendlyname errors
+											entry := map[string]interface{}{
+												"person_id": pm["person_id"],
+												"role_id":   pm["role_id"],
+											}
+											personsList = append(personsList, entry)
 										}
 									}
 								}

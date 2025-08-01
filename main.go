@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -23,7 +22,7 @@ func main() {
 		log.Fatalf("LDAP auth failed: %v", err)
 	}
 	defer client.Close()
-	fmt.Println("LDAP authentication successful.")
+	log.Println("LDAP authentication successful.")
 
 	searchRequest := ldap.NewSearchRequest(
 		baseDN,
@@ -57,7 +56,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Gagal proses validasi department: %v", err)
 	}
-	fmt.Println("Proses validasi department selesai. Lihat users.csv dan validation-errors-report.csv.")
+	log.Println("Proses validasi department selesai. Lihat users.csv dan validation-errors-report.csv.")
 
 	// Sync DepartmentName as Team in iTop
 	itopURL := os.Getenv("ITOP_API_URL")
@@ -78,7 +77,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Gagal sync department as team ke iTop: %v", err)
 	}
-	fmt.Println("Sync department as team ke iTop selesai. Lihat valid-department-list.yaml untuk TeamID.")
+	log.Println("Sync department as team ke iTop selesai. Lihat valid-department-list.yaml untuk TeamID.")
 
 	// Sync users to teams in iTop
 	notSyncedCSV := "output/user-not-synchronized.csv"
@@ -86,5 +85,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("Gagal sync user ke team iTop: %v", err)
 	}
-	fmt.Println("Sync user ke team iTop selesai. Lihat user-not-synchronized.csv untuk hasilnya.")
+	log.Println("Sync user ke team iTop selesai. Lihat user-not-synchronized.csv untuk hasilnya.")
 }
