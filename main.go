@@ -44,8 +44,8 @@ func main() {
 
 	// Validate and assign department, output users.csv and validation-errors-report.csv
 	yamlPath := "data/valid-department-list.yaml"
-	usersOut := "users.csv"
-	reportOut := "validation-errors-report.csv"
+	usersOut := "output/users.csv"
+	reportOut := "output/validation-errors-report.csv"
 	threshold := 1.00 // Jaro-Winkler similarity threshold
 	err = parser.ValidateAndAssignDepartment(users, yamlPath, usersOut, reportOut, threshold)
 	if err != nil {
