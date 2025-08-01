@@ -1,4 +1,4 @@
-package itop
+package itopclient
 
 import (
 	"crypto/tls"

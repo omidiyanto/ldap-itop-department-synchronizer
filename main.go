@@ -8,8 +8,10 @@ import (
 	"github.com/go-ldap/ldap/v3"
 	"github.com/joho/godotenv"
 
+	"ldap-itop/itopclient"
 	"ldap-itop/ldapclient"
 	"ldap-itop/parser"
+	"ldap-itop/synchronizer"
 )
 
 func main() {
@@ -56,4 +58,25 @@ func main() {
 		log.Fatalf("Gagal proses validasi department: %v", err)
 	}
 	fmt.Println("Proses validasi department selesai. Lihat users.csv dan validation-errors-report.csv.")
+
+	// Sync DepartmentName as Team in iTop
+	itopURL := os.Getenv("ITOP_API_URL")
+	itopUser := os.Getenv("ITOP_API_USER")
+	itopPwd := os.Getenv("ITOP_API_PWD")
+	itopVersion := os.Getenv("ITOP_VERSION")
+	orgID := os.Getenv("ITOP_ORG_ID")
+	if itopURL == "" || itopUser == "" || itopPwd == "" || itopVersion == "" || orgID == "" {
+		log.Fatalf("ITOP_URL, ITOP_USER, ITOP_PASSWORD, ITOP_VERSION, ITOP_ORG_ID env vars must be set")
+	}
+	itopClient := &itopclient.ITopClient{
+		BaseURL:  itopURL,
+		Username: itopUser,
+		Password: itopPwd,
+		Version:  itopVersion,
+	}
+	err = synchronizer.SyncTeamsToItop(yamlPath, itopClient, orgID)
+	if err != nil {
+		log.Fatalf("Gagal sync department as team ke iTop: %v", err)
+	}
+	fmt.Println("Sync department as team ke iTop selesai. Lihat valid-department-list.yaml untuk TeamID.")
 }

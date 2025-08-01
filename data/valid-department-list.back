@@ -1,77 +1,60 @@
 - DepartmentName: ATSN
   SubList:
   - ""
-  TeamID: "159"
 - DepartmentName: DIGI
   SubList:
   - Digi
   - DIGI Dept
-  TeamID: "122"
 - DepartmentName: DIRECTOR
   SubList:
   - ""
-  TeamID: "123"
 - DepartmentName: DESAY
   SubList:
   - ""
-  TeamID: "124"
 - DepartmentName: FINANCE INTERNAL AUDITOR
   SubList:
   - IA Finance
-  TeamID: "125"
 - DepartmentName: FINANCE / TAX
   SubList:
   - Finance Dept
-  TeamID: "126"
 - DepartmentName: FACILITY
   SubList:
   - Facility Dept
   - Facility
-  TeamID: "127"
 - DepartmentName: QHSE
   SubList:
   - QHSE
-  TeamID: "128"
 - DepartmentName: SHIPPING
   SubList:
   - Shipping Dept
-  TeamID: "129"
 - DepartmentName: HR & GA
   SubList:
   - HRD
   - Human Resource Department
-  TeamID: "130"
 - DepartmentName: IAD / COO secretary
   SubList:
   - COO Secretary
-  TeamID: "131"
 - DepartmentName: PROJECT
   SubList:
   - Project Dept
   - Project
-  TeamID: "132"
 - DepartmentName: CP
   SubList:
   - CP
-  TeamID: "133"
 - DepartmentName: DATA STEWARD
   SubList:
   - Data Steward
-  TeamID: "134"
 - DepartmentName: DOT
   SubList:
   - DOT
-  TeamID: "135"
 - DepartmentName: PURCHASING
   SubList:
   - Purchasing Dept
   - Purchasing
-  TeamID: "136"
 - DepartmentName: ORT
   SubList:
   - ORT
   - ORT Dept
-  TeamID: "137"
 - DepartmentName: MIS
   SubList:
   - MIS Dept
@@ -79,93 +62,72 @@
   - IT-Infra
   - IT-ERP
   - IT-Inhouse
-  TeamID: "138"
 - DepartmentName: CORPSEC
   SubList:
   - ""
-  TeamID: "139"
 - DepartmentName: LTE
   SubList:
   - LTE Dept
   - LTE
-  TeamID: "140"
 - DepartmentName: ASUS
   SubList:
   - ASUS
-  TeamID: "141"
 - DepartmentName: MOULDING
   SubList:
   - Moulding Dept
   - Moulding
-  TeamID: "142"
 - DepartmentName: MANAGER
   SubList:
   - ""
-  TeamID: "143"
 - DepartmentName: XIAOMI
   SubList:
   - Xiaomi
   - Xiaomi Dept
-  TeamID: "144"
 - DepartmentName: PID
   SubList:
   - PID
-  TeamID: "145"
 - DepartmentName: PEGATRON
   SubList:
   - Pegatron
   - Pegatron Dept
-  TeamID: "146"
 - DepartmentName: SPP
   SubList:
   - SPP
-  TeamID: "147"
 - DepartmentName: SMT
   SubList:
   - SMT Dept
   - SMT
-  TeamID: "148"
 - DepartmentName: Coin Battery Packaging
   SubList:
   - ""
-  TeamID: "149"
 - DepartmentName: Lithium Battery
   SubList:
   - ""
-  TeamID: "150"
 - DepartmentName: TOA
   SubList:
   - TOA Dept
   - TOA
-  TeamID: "151"
 - DepartmentName: HONOR
   SubList:
   - Honor
-  TeamID: "152"
 - DepartmentName: MOTOROLA
   SubList:
   - Motorola Dept
-  TeamID: "153"
 - DepartmentName: HUAQIN
   SubList:
   - Huaqin
   - HUAQIN 18
   - Huaqin PC
-  TeamID: "154"
 - DepartmentName: NOTEBOOK
   SubList:
   - ""
-  TeamID: "155"
 - DepartmentName: VACUUM TRAY & MASKER
   SubList:
   - ""
-  TeamID: "156"
 - DepartmentName: TRAINING
   SubList:
   - ""
-  TeamID: "157"
 - DepartmentName: TCL ATAS
   SubList:
   - TCL
   - TCL Dept
-  TeamID: "158"
