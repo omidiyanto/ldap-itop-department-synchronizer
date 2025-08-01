@@ -79,4 +79,12 @@ func main() {
 		log.Fatalf("Gagal sync department as team ke iTop: %v", err)
 	}
 	fmt.Println("Sync department as team ke iTop selesai. Lihat valid-department-list.yaml untuk TeamID.")
+
+	// Sync users to teams in iTop
+	notSyncedCSV := "output/user-not-synchronized.csv"
+	err = synchronizer.SyncUsersToTeams(usersOut, yamlPath, notSyncedCSV, itopClient)
+	if err != nil {
+		log.Fatalf("Gagal sync user ke team iTop: %v", err)
+	}
+	fmt.Println("Sync user ke team iTop selesai. Lihat user-not-synchronized.csv untuk hasilnya.")
 }
