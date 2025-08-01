@@ -32,6 +32,8 @@
 - DepartmentName: HR & GA
   SubList:
   - HRD
+  - Human Resource
+  - Human Resources
   - Human Resource Dept
 - DepartmentName: IAD / COO secretary
   SubList:
