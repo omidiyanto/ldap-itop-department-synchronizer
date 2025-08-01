@@ -46,6 +46,10 @@ func main() {
 	yamlPath := "data/valid-department-list.yaml"
 	usersOut := "output/users.csv"
 	reportOut := "output/validation-errors-report.csv"
+	// Ensure output directory exists
+	if err := os.MkdirAll("output", os.ModePerm); err != nil {
+		log.Fatalf("Failed to create output directory: %v", err)
+	}
 	threshold := 1.00 // Jaro-Winkler similarity threshold
 	err = parser.ValidateAndAssignDepartment(users, yamlPath, usersOut, reportOut, threshold)
 	if err != nil {
