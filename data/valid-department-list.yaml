@@ -1,0 +1,136 @@
+- DepartmentName: ATSN
+  SubList:
+  - ""
+- DepartmentName: DIGI
+  SubList:
+  - Digi
+  - DIGI Dept
+- DepartmentName: DIRECTOR
+  SubList:
+  - ""
+- DepartmentName: DESAY
+  SubList:
+  - ""
+- DepartmentName: FINANCE INTERNAL AUDITOR
+  SubList:
+  - "IA Finance"
+- DepartmentName: FINANCE / TAX
+  SubList:
+  - Finance Dept
+- DepartmentName: FACILITY
+  SubList:
+  - Facility Dept
+  - Facility
+- DepartmentName: QHSE
+  SubList:
+  - QHSE
+- DepartmentName: SHIPPING
+  SubList:
+  - Shipping Dept
+- DepartmentName: HR & GA
+  SubList:
+  - "HRD"
+  - "Human Resource Department"
+- DepartmentName: IAD / COO secretary
+  SubList:
+  - COO Secretary
+- DepartmentName: PROJECT
+  SubList:
+  - Project Dept
+  - Project
+- DepartmentName: CP
+  SubList:
+  - CP
+- DepartmentName: DATA STEWARD
+  SubList:
+  - Data Steward
+- DepartmentName: DOT
+  SubList:
+  - DOT
+- DepartmentName: PURCHASING
+  SubList:
+  - Purchasing Dept
+  - Purchasing
+- DepartmentName: ORT
+  SubList:
+  - ORT
+  - ORT Dept
+- DepartmentName: MIS
+  SubList:
+  - MIS Dept
+  - MIS
+  - IT-Infra
+  - IT-ERP
+  - IT-Inhouse
+- DepartmentName: CORPSEC
+  SubList:
+  - ""
+- DepartmentName: LTE
+  SubList:
+  - LTE Dept
+  - LTE
+- DepartmentName: ASUS
+  SubList:
+  - ASUS
+- DepartmentName: MOULDING
+  SubList:
+  - Moulding Dept
+  - Moulding
+- DepartmentName: MANAGER
+  SubList:
+  - ""
+- DepartmentName: XIAOMI
+  SubList:
+  - Xiaomi
+  - Xiaomi Dept
+- DepartmentName: PID
+  SubList:
+  - PID
+- DepartmentName: PEGATRON
+  SubList:
+  - Pegatron
+  - Pegatron Dept
+- DepartmentName: SPP
+  SubList:
+  - SPP
+- DepartmentName: SMT
+  SubList:
+  - SMT Dept
+  - SMT
+- DepartmentName: Coin Battery Packaging
+  SubList:
+  - ""
+- DepartmentName: Lithium Battery
+  SubList:
+  - ""
+- DepartmentName: TOA
+  SubList:
+  - TOA Dept
+  - TOA
+- DepartmentName: HONOR
+  SubList:
+  - Honor
+- DepartmentName: MOTOROLA
+  SubList:
+  - Motorola Dept
+- DepartmentName: HUAQIN
+  SubList:
+  - Huaqin
+  - HUAQIN 18
+  - Huaqin PC
+- DepartmentName: NOTEBOOK
+  SubList:
+  - ""
+- DepartmentName: VACUUM TRAY & MASKER
+  SubList:
+  - ""
+- DepartmentName: ORT
+  SubList:
+  - ""
+- DepartmentName: TRAINING
+  SubList:
+  - ""
+- DepartmentName: TCL ATAS
+  SubList:
+  - TCL
+  - TCL Dept
