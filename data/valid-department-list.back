@@ -17,6 +17,8 @@
 - DepartmentName: FINANCE / TAX
   SubList:
   - Finance Dept
+  - Finance
+  - Tax
 - DepartmentName: FACILITY
   SubList:
   - Facility Dept
@@ -30,7 +32,7 @@
 - DepartmentName: HR & GA
   SubList:
   - HRD
-  - Human Resource Department
+  - Human Resource Dept
 - DepartmentName: IAD / COO secretary
   SubList:
   - COO Secretary
@@ -60,8 +62,13 @@
   - MIS Dept
   - MIS
   - IT-Infra
+  - IT Infra
+  - IT In-Infra
   - IT-ERP
+  - IT ERP
   - IT-Inhouse
+  - IT Inhouse
+  - IT In-house
 - DepartmentName: CORPSEC
   SubList:
   - ""
