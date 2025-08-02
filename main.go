@@ -58,17 +58,25 @@ func main() {
 	sendErrorMail := func(subject, body string, attachments map[string][]byte) error {
 		from := os.Getenv("EMAIL_FROM_ADDR")
 		to := os.Getenv("EMAIL_TO")
+		cc := os.Getenv("EMAIL_CC")
 		smtpHost := os.Getenv("EMAIL_SMTP_HOST")
 		smtpPort := os.Getenv("EMAIL_SMTP_PORT")
 		skipTLS := os.Getenv("EMAIL_SKIP_TLS_VERIFY")
 		fromName := os.Getenv("EMAIL_FROM_NAME")
 
 		recipients := strings.Split(to, ",")
+		ccList := []string{}
+		if cc != "" {
+			ccList = strings.Split(cc, ",")
+		}
 
 		boundary := "BOUNDARY-1234567890"
 		headers := make(map[string]string)
 		headers["From"] = fromName + " <" + from + ">"
 		headers["To"] = to
+		if cc != "" {
+			headers["Cc"] = cc
+		}
 		headers["Subject"] = subject
 		headers["MIME-Version"] = "1.0"
 		headers["Content-Type"] = "multipart/mixed; boundary=" + boundary
@@ -93,6 +101,9 @@ func main() {
 
 		addr := smtpHost + ":" + smtpPort
 
+		// Gabungkan recipients dan ccList untuk pengiriman email
+		allRecipients := append(recipients, ccList...)
+
 		if strings.ToLower(skipTLS) == "true" {
 			c, err := smtp.Dial(addr)
 			if err != nil {
@@ -102,8 +113,8 @@ func main() {
 			if err := c.Mail(from); err != nil {
 				return err
 			}
-			for _, rcpt := range recipients {
-				if err := c.Rcpt(rcpt); err != nil {
+			for _, rcpt := range allRecipients {
+				if err := c.Rcpt(strings.TrimSpace(rcpt)); err != nil {
 					return err
 				}
 			}
@@ -137,8 +148,8 @@ func main() {
 			if err := c.Mail(from); err != nil {
 				return err
 			}
-			for _, rcpt := range recipients {
-				if err := c.Rcpt(rcpt); err != nil {
+			for _, rcpt := range allRecipients {
+				if err := c.Rcpt(strings.TrimSpace(rcpt)); err != nil {
 					return err
 				}
 			}
