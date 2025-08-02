@@ -43,10 +43,10 @@ func main() {
 	// 	fmt.Printf("CN: %s, Email: %s, Username: %s, Department: %s\n", u.CN, u.Email, u.SAMAccountName, u.Department)
 	// }
 
-	// Validate and assign department, output users.csv and validation-errors-report.csv
+	// Validate and assign department, output users.csv and dept-validation-errors-report.csv
 	yamlPath := "data/valid-department-list.yaml"
 	usersOut := "output/users.csv"
-	reportOut := "output/validation-errors-report.csv"
+	reportOut := "output/dept-validation-errors-report.csv"
 	// Ensure output directory exists
 	if err := os.MkdirAll("output", os.ModePerm); err != nil {
 		log.Fatalf("Failed to create output directory: %v", err)
@@ -56,7 +56,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Gagal proses validasi department: %v", err)
 	}
-	log.Println("Proses validasi department selesai. Lihat users.csv dan validation-errors-report.csv.")
+	log.Println("Proses validasi department selesai. Lihat users.csv dan dept-validation-errors-report.csv.")
 
 	// Sync DepartmentName as Team in iTop
 	itopURL := os.Getenv("ITOP_API_URL")
