@@ -1,12 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"crypto/tls"
+	"encoding/csv"
 	"io/ioutil"
 	"log"
 	"net/smtp"
 	"os"
 	"strings"
+
+	"github.com/tealeg/xlsx"
 
 	"github.com/go-ldap/ldap/v3"
 	"github.com/joho/godotenv"
@@ -201,6 +205,25 @@ func main() {
 	// Read error files for later email
 	reportBytes, _ := ioutil.ReadFile(reportOut)
 
+	// Convert dept-validation-errors-report.csv to XLSX
+	deptXlsxBytes := []byte{}
+	if len(reportBytes) > 0 {
+		csvReader := csv.NewReader(strings.NewReader(string(reportBytes)))
+		records, _ := csvReader.ReadAll()
+		file := xlsx.NewFile()
+		sheet, _ := file.AddSheet("Sheet1")
+		for _, row := range records {
+			xrow := sheet.AddRow()
+			for _, cell := range row {
+				xcell := xrow.AddCell()
+				xcell.Value = cell
+			}
+		}
+		buf := new(bytes.Buffer)
+		file.Write(buf)
+		deptXlsxBytes = buf.Bytes()
+	}
+
 	// Sync DepartmentName as Team in iTop
 	itopURL := os.Getenv("ITOP_API_URL")
 	itopUser := os.Getenv("ITOP_API_USER")
@@ -232,21 +255,41 @@ func main() {
 
 	notSyncedBytes, _ := ioutil.ReadFile(notSyncedCSV)
 
+	// Convert user-not-synchronized.csv to XLSX
+	notSyncedXlsxBytes := []byte{}
+	if len(notSyncedBytes) > 0 {
+		csvReader := csv.NewReader(strings.NewReader(string(notSyncedBytes)))
+		records, _ := csvReader.ReadAll()
+		file := xlsx.NewFile()
+		sheet, _ := file.AddSheet("Sheet1")
+		for _, row := range records {
+			xrow := sheet.AddRow()
+			for _, cell := range row {
+				xcell := xrow.AddCell()
+				xcell.Value = cell
+			}
+		}
+		buf := new(bytes.Buffer)
+		file.Write(buf)
+		notSyncedXlsxBytes = buf.Bytes()
+	}
+
 	// Send single email at end if any errors
 	if len(reportBytes) > 0 || len(notSyncedBytes) > 0 {
-		emailBody := "Berikut adalah hasil error sinkronisasi iTop x LDAP:\n\n"
+		emailBody := "Dear Team,\n\nBerikut adalah hasil error sinkronisasi iTop x LDAP:\n"
 		if len(reportBytes) > 0 {
-			emailBody += "Dept Validation Errors:\n\n" + string(reportBytes) + "\n\n"
+			emailBody += "1. Terdapat Department Validation Errors (Adanya department pada user yang tidak valid)\n"
 		}
 		if len(notSyncedBytes) > 0 {
-			emailBody += "User Not Synchronized Errors:\n\n" + string(notSyncedBytes) + "\n\n"
+			emailBody += "2. User Not Synchronized Errors (Adanya user yang gagal dalam proses syncronization dari AD ke iTop)\n"
 		}
+		emailBody += "\n\nSilakan periksa lampiran untuk detail lebih lanjut.\n\nBest regards,\nDevOps Team"
 		attachments := map[string][]byte{}
-		if len(reportBytes) > 0 {
-			attachments["dept-validation-errors-report.csv"] = reportBytes
+		if len(deptXlsxBytes) > 0 {
+			attachments["dept-validation-errors-report.xlsx"] = deptXlsxBytes
 		}
-		if len(notSyncedBytes) > 0 {
-			attachments["user-not-synchronized.csv"] = notSyncedBytes
+		if len(notSyncedXlsxBytes) > 0 {
+			attachments["user-not-synchronized.xlsx"] = notSyncedXlsxBytes
 		}
 		err := sendErrorMail(os.Getenv("EMAIL_SUBJECT"), emailBody, attachments)
 		if err != nil {

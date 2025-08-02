@@ -5,6 +5,7 @@ go 1.23.6
 require (
 	github.com/go-ldap/ldap/v3 v3.4.11
 	github.com/joho/godotenv v1.5.1
+	github.com/tealeg/xlsx v1.0.5
 	github.com/xrash/smetrics v0.0.0-20250705151800-55b8f293f342
 	gopkg.in/yaml.v2 v2.4.0
 )
