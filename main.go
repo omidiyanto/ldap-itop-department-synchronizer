@@ -276,14 +276,14 @@ func main() {
 
 	// Send single email at end if any errors
 	if len(reportBytes) > 0 || len(notSyncedBytes) > 0 {
-		emailBody := "Dear Team,\n\nBerikut adalah hasil error sinkronisasi iTop x LDAP:\n"
+		emailBody := "Dear Team,\n\nBerikut adalah hasil error sinkronisasi user dan departmentnya dari AD ke iTop:\n"
 		if len(reportBytes) > 0 {
 			emailBody += "1. Terdapat Department Validation Errors (Adanya department pada user yang tidak valid)\n"
 		}
 		if len(notSyncedBytes) > 0 {
 			emailBody += "2. User Not Synchronized Errors (Adanya user yang gagal dalam proses syncronization dari AD ke iTop)\n"
 		}
-		emailBody += "\n\nSilakan periksa lampiran untuk detail lebih lanjut.\n\nBest regards,\nDevOps Team"
+		emailBody += "\nSilakan periksa lampiran untuk detail lebih lanjut.\n\nBest regards,\nDevOps Team"
 		attachments := map[string][]byte{}
 		if len(deptXlsxBytes) > 0 {
 			attachments["dept-validation-errors-report.xlsx"] = deptXlsxBytes
@@ -293,9 +293,9 @@ func main() {
 		}
 		err := sendErrorMail(os.Getenv("EMAIL_SUBJECT"), emailBody, attachments)
 		if err != nil {
-			log.Printf("Gagal kirim email error sinkronisasi: %v", err)
+			log.Printf("Failed to sent email: %v", err)
 		} else {
-			log.Println("Email error sinkronisasi sent.")
+			log.Println("Email succsfully sent.")
 		}
 	}
 }
