@@ -1,8 +1,12 @@
 package main
 
 import (
+	"crypto/tls"
+	"io/ioutil"
 	"log"
+	"net/smtp"
 	"os"
+	"strings"
 
 	"github.com/go-ldap/ldap/v3"
 	"github.com/joho/godotenv"
@@ -13,7 +17,143 @@ import (
 	"ldap-itop/synchronizer"
 )
 
+// Helper: base64 encode for attachments
+func encodeBase64(data []byte) string {
+	const base64Table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+	enc := make([]byte, 0, len(data)*2)
+	for i := 0; i < len(data); i += 3 {
+		var b [3]byte
+		n := copy(b[:], data[i:])
+		enc = append(enc, base64Table[b[0]>>2])
+		enc = append(enc, base64Table[((b[0]&0x03)<<4)|(b[1]>>4)])
+		if n > 1 {
+			enc = append(enc, base64Table[((b[1]&0x0f)<<2)|(b[2]>>6)])
+		} else {
+			enc = append(enc, '=')
+		}
+		if n > 2 {
+			enc = append(enc, base64Table[b[2]&0x3f])
+		} else {
+			enc = append(enc, '=')
+		}
+	}
+	// Add line breaks every 76 chars
+	out := ""
+	for i := 0; i < len(enc); i += 76 {
+		end := i + 76
+		if end > len(enc) {
+			end = len(enc)
+		}
+		out += string(enc[i:end]) + "\r\n"
+	}
+	return out
+}
+
 func main() {
+	// Helper: send email with error file contents and attachments
+	sendErrorMail := func(subject, body string, attachments map[string][]byte) error {
+		from := os.Getenv("EMAIL_FROM_ADDR")
+		to := os.Getenv("EMAIL_TO")
+		smtpHost := os.Getenv("EMAIL_SMTP_HOST")
+		smtpPort := os.Getenv("EMAIL_SMTP_PORT")
+		skipTLS := os.Getenv("EMAIL_SKIP_TLS_VERIFY")
+		fromName := os.Getenv("EMAIL_FROM_NAME")
+
+		recipients := strings.Split(to, ",")
+
+		boundary := "BOUNDARY-1234567890"
+		headers := make(map[string]string)
+		headers["From"] = fromName + " <" + from + ">"
+		headers["To"] = to
+		headers["Subject"] = subject
+		headers["MIME-Version"] = "1.0"
+		headers["Content-Type"] = "multipart/mixed; boundary=" + boundary
+
+		msg := ""
+		for k, v := range headers {
+			msg += k + ": " + v + "\r\n"
+		}
+		msg += "\r\n"
+		msg += "--" + boundary + "\r\n"
+		msg += "Content-Type: text/plain; charset=\"utf-8\"\r\n\r\n"
+		msg += body + "\r\n"
+
+		for fname, content := range attachments {
+			msg += "--" + boundary + "\r\n"
+			msg += "Content-Type: text/csv; name=\"" + fname + "\"\r\n"
+			msg += "Content-Disposition: attachment; filename=\"" + fname + "\"\r\n"
+			msg += "Content-Transfer-Encoding: base64\r\n\r\n"
+			msg += encodeBase64(content) + "\r\n"
+		}
+		msg += "--" + boundary + "--\r\n"
+
+		addr := smtpHost + ":" + smtpPort
+
+		if strings.ToLower(skipTLS) == "true" {
+			c, err := smtp.Dial(addr)
+			if err != nil {
+				return err
+			}
+			defer c.Close()
+			if err := c.Mail(from); err != nil {
+				return err
+			}
+			for _, rcpt := range recipients {
+				if err := c.Rcpt(rcpt); err != nil {
+					return err
+				}
+			}
+			w, err := c.Data()
+			if err != nil {
+				return err
+			}
+			_, err = w.Write([]byte(msg))
+			if err != nil {
+				return err
+			}
+			err = w.Close()
+			if err != nil {
+				return err
+			}
+			return c.Quit()
+		} else {
+			tlsConfig := &tls.Config{
+				InsecureSkipVerify: strings.ToLower(skipTLS) == "true",
+				ServerName:         smtpHost,
+			}
+			conn, err := tls.Dial("tcp", addr, tlsConfig)
+			if err != nil {
+				return err
+			}
+			c, err := smtp.NewClient(conn, smtpHost)
+			if err != nil {
+				return err
+			}
+			defer c.Close()
+			if err := c.Mail(from); err != nil {
+				return err
+			}
+			for _, rcpt := range recipients {
+				if err := c.Rcpt(rcpt); err != nil {
+					return err
+				}
+			}
+			w, err := c.Data()
+			if err != nil {
+				return err
+			}
+			_, err = w.Write([]byte(msg))
+			if err != nil {
+				return err
+			}
+			err = w.Close()
+			if err != nil {
+				return err
+			}
+			return c.Quit()
+		}
+	}
+
 	_ = godotenv.Load()
 	baseDN := os.Getenv("LDAP_BASE_DN")
 
@@ -58,6 +198,9 @@ func main() {
 	}
 	log.Println("Proses validasi department selesai. Lihat users.csv dan dept-validation-errors-report.csv.")
 
+	// Read error files for later email
+	reportBytes, _ := ioutil.ReadFile(reportOut)
+
 	// Sync DepartmentName as Team in iTop
 	itopURL := os.Getenv("ITOP_API_URL")
 	itopUser := os.Getenv("ITOP_API_USER")
@@ -86,4 +229,30 @@ func main() {
 		log.Fatalf("Gagal sync user ke team iTop: %v", err)
 	}
 	log.Println("Sync user ke team iTop selesai. Lihat user-not-synchronized.csv untuk hasilnya.")
+
+	notSyncedBytes, _ := ioutil.ReadFile(notSyncedCSV)
+
+	// Send single email at end if any errors
+	if len(reportBytes) > 0 || len(notSyncedBytes) > 0 {
+		emailBody := "Berikut adalah hasil error sinkronisasi iTop x LDAP:\n\n"
+		if len(reportBytes) > 0 {
+			emailBody += "Dept Validation Errors:\n\n" + string(reportBytes) + "\n\n"
+		}
+		if len(notSyncedBytes) > 0 {
+			emailBody += "User Not Synchronized Errors:\n\n" + string(notSyncedBytes) + "\n\n"
+		}
+		attachments := map[string][]byte{}
+		if len(reportBytes) > 0 {
+			attachments["dept-validation-errors-report.csv"] = reportBytes
+		}
+		if len(notSyncedBytes) > 0 {
+			attachments["user-not-synchronized.csv"] = notSyncedBytes
+		}
+		err := sendErrorMail(os.Getenv("EMAIL_SUBJECT"), emailBody, attachments)
+		if err != nil {
+			log.Printf("Gagal kirim email error sinkronisasi: %v", err)
+		} else {
+			log.Println("Email error sinkronisasi sent.")
+		}
+	}
 }
