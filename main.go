@@ -62,7 +62,7 @@ func main() {
 
 	reportBytes, _ := ioutil.ReadFile(reportOut)
 
-	// Convert CSV to XLSX if errors
+	// Convert CSV to XLSX if error
 	var deptXlsx []byte
 	if len(reportBytes) > 0 {
 		deptXlsx = toXLSX(reportBytes)
