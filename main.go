@@ -19,9 +19,46 @@ import (
 	"ldap-itop/synchronizer"
 )
 
+func toXLSX(csvData []byte) []byte {
+	records, _ := csv.NewReader(strings.NewReader(string(csvData))).ReadAll()
+	file := xlsx.NewFile()
+	sheet, _ := file.AddSheet("Sheet1")
+	for _, row := range records {
+		xrow := sheet.AddRow()
+		for _, cell := range row {
+			xcell := xrow.AddCell()
+			xcell.Value = cell
+		}
+	}
+	buf := new(bytes.Buffer)
+	file.Write(buf)
+	return buf.Bytes()
+}
+
+func initItopClient() (*itopclient.ITopClient, string) {
+	itopURL := os.Getenv("ITOP_API_URL")
+	itopUser := os.Getenv("ITOP_API_USER")
+	itopPwd := os.Getenv("ITOP_API_PWD")
+	itopVersion := os.Getenv("ITOP_VERSION")
+	orgID := os.Getenv("ITOP_ORG_ID")
+	client := &itopclient.ITopClient{BaseURL: itopURL, Username: itopUser, Password: itopPwd, Version: itopVersion}
+	return client, orgID
+}
+
+func buildEmailBody(hasDeptErr, hasUserErr bool) string {
+	body := "Dear Team,\n\nBerikut adalah hasil error sinkronisasi user dan departmentnya dari AD ke iTop:\n"
+	if hasDeptErr {
+		body += "- Terdapat Department Validation Errors (Adanya department pada user yang tidak valid)\n"
+	}
+	if hasUserErr {
+		body += "- User Not Synchronized Errors (Adanya user yang gagal dalam proses syncronization dari AD ke iTop)\n"
+	}
+	body += "\nSilakan periksa lampiran untuk detail lebih lanjut.\n\nBest regards,\nDevOps Team"
+	return body
+}
+
 func main() {
 	_ = godotenv.Load()
-
 	baseDN := os.Getenv("LDAP_BASE_DN")
 
 	client, err := ldapclient.NewLDAPClient()
@@ -53,12 +90,12 @@ func main() {
 	if err := os.MkdirAll("output", os.ModePerm); err != nil {
 		log.Fatalf("Failed create output dir: %v", err)
 	}
-	threshold := 1.00
+	threshold := 1.00 // Jaro-Winkler similarity threshold
 	err = parser.ValidateAndAssignDepartment(users, yamlPath, usersOut, reportOut, threshold)
 	if err != nil {
-		log.Fatalf("Dept validation failed: %v", err)
+		log.Fatalf("Department validation failed: %v", err)
 	}
-	log.Println("Dept validation complete.")
+	log.Println("Department validation complete.")
 
 	reportBytes, _ := ioutil.ReadFile(reportOut)
 
@@ -68,20 +105,20 @@ func main() {
 		deptXlsx = toXLSX(reportBytes)
 	}
 
-	// Sync teams and users to iTop
+	// Sync teams/department and users to iTop
 	itopClient, orgID := initItopClient()
 	err = synchronizer.SyncTeamsToItop(yamlPath, itopClient, orgID)
 	if err != nil {
-		log.Fatalf("Team sync failed: %v", err)
+		log.Fatalf("Team/Department sync failed: %v", err)
 	}
-	log.Println("Teams synced.")
+	log.Println("Teams/Departments synced successfully.")
 
 	notSyncedCSV := "output/user-not-synchronized.csv"
 	err = synchronizer.SyncUsersToTeams(usersOut, yamlPath, notSyncedCSV, itopClient)
 	if err != nil {
 		log.Fatalf("User sync failed: %v", err)
 	}
-	log.Println("Users synced.")
+	log.Println("Users synced successfully.")
 
 	notSyncedBytes, _ := ioutil.ReadFile(notSyncedCSV)
 	var userXlsx []byte
@@ -107,42 +144,4 @@ func main() {
 			log.Println("Email sent.")
 		}
 	}
-}
-
-func toXLSX(csvData []byte) []byte {
-	records, _ := csv.NewReader(strings.NewReader(string(csvData))).ReadAll()
-	file := xlsx.NewFile()
-	sheet, _ := file.AddSheet("Sheet1")
-	for _, row := range records {
-		xrow := sheet.AddRow()
-		for _, cell := range row {
-			xcell := xrow.AddCell()
-			xcell.Value = cell
-		}
-	}
-	buf := new(bytes.Buffer)
-	file.Write(buf)
-	return buf.Bytes()
-}
-
-func initItopClient() (*itopclient.ITopClient, string) {
-	itopURL := os.Getenv("ITOP_API_URL")
-	itopUser := os.Getenv("ITOP_API_USER")
-	itopPwd := os.Getenv("ITOP_API_PWD")
-	itopVersion := os.Getenv("ITOP_VERSION")
-	orgID := os.Getenv("ITOP_ORG_ID")
-	client := &itopclient.ITopClient{BaseURL: itopURL, Username: itopUser, Password: itopPwd, Version: itopVersion}
-	return client, orgID
-}
-
-func buildEmailBody(hasDeptErr, hasUserErr bool) string {
-	body := "Dear Team,\n\nBerikut hasil sinkronisasi: \n"
-	if hasDeptErr {
-		body += "- Dept validation errors present\n"
-	}
-	if hasUserErr {
-		body += "- User synchronization errors present\n"
-	}
-	body += "\nSilakan cek lampiran.\n\nRegards,\nDevOps"
-	return body
 }
