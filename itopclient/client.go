@@ -53,5 +53,6 @@ func (c *ITopClient) Post(operation string, params map[string]interface{}) ([]by
 		log.Printf("iTop API response body: %s", string(body))
 		return nil, err
 	}
+	log.Println("iTop authentication successful.")
 	return body, err
 }
