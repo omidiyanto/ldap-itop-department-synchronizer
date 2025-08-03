@@ -53,6 +53,35 @@ func (c *ITopClient) Post(operation string, params map[string]interface{}) ([]by
 		log.Printf("iTop API response body: %s", string(body))
 		return nil, err
 	}
-	log.Println("iTop authentication successful.")
 	return body, err
+}
+
+// Authenticate checks iTop credentials by making a simple API call
+func (c *ITopClient) Authenticate() error {
+	params := map[string]interface{}{
+		"class":         "Organization",
+		"key":           "SELECT Organization WHERE id=3",
+		"output_fields": "id",
+	}
+	resp, err := c.Post("core/get", params)
+	if err != nil {
+		return err
+	}
+	// Optionally, check for iTop error in response JSON
+	var result map[string]interface{}
+	if err := json.Unmarshal(resp, &result); err != nil {
+		return err
+	}
+	if _, ok := result["objects"]; !ok {
+		return &AuthError{Message: "No objects returned, possible authentication failure"}
+	}
+	return nil
+}
+
+type AuthError struct {
+	Message string
+}
+
+func (e *AuthError) Error() string {
+	return e.Message
 }

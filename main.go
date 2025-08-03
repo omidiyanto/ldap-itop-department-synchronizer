@@ -107,6 +107,13 @@ func main() {
 
 	// Sync teams/department and users to iTop
 	itopClient, orgID := initItopClient()
+	// Test iTop authentication
+	authErr := itopClient.Authenticate()
+	if authErr != nil {
+		log.Fatalf("iTop authentication failed: %v", authErr)
+	} else {
+		log.Println("iTop authentication successful.")
+	}
 	err = synchronizer.SyncTeamsToItop(yamlPath, itopClient, orgID)
 	if err != nil {
 		log.Fatalf("Team/Department sync failed: %v", err)
