@@ -9,5 +9,6 @@ RUN go build -o main .
 FROM alpine:latest
 WORKDIR /app
 COPY --from=builder /app/main .
+COPY ./data/valid-department-list.yaml /app/data/valid-department-list.yaml
 RUN chmod a+x /app/main
 CMD ["/app/main"]
