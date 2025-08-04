@@ -1,13 +1,25 @@
 - DepartmentName: ATSN
   SubList:
-  - ATI
+  - ""
 - DepartmentName: DIGI
   SubList:
   - Digi
   - DIGI Dept
-- DepartmentName: DIRECTOR
+- DepartmentName: GAD
   SubList:
-  - ""
+  - GAD
+- DepartmentName: Accounting
+  SubList:
+  - Accounting
+- DepartmentName: Legal
+  SubList:
+  - Legal
+- DepartmentName: Marketing
+  SubList:
+  - Marketing
+- DepartmentName: Loading
+  SubList:
+  - Loading
 - DepartmentName: DESAY
   SubList:
   - Desaysv 
@@ -17,6 +29,9 @@
   SubList:
   - IA Finance
   - Finance IA
+- DepartmentName: INTERNAL AUDITOR
+  SubList:
+  - Internal Auditor
 - DepartmentName: FINANCE / TAX
   SubList:
   - Finance Dept
