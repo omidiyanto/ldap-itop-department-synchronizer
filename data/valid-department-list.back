@@ -107,9 +107,6 @@
   SubList:
   - Moulding Dept
   - Moulding
-- DepartmentName: MANAGER
-  SubList:
-  - ""
 - DepartmentName: XIAOMI
   SubList:
   - Xiaomi
@@ -149,12 +146,6 @@
   - Huaqin
   - HUAQIN 18
   - Huaqin PC
-- DepartmentName: NOTEBOOK
-  SubList:
-  - ""
-- DepartmentName: VACUUM TRAY & MASKER
-  SubList:
-  - ""
 - DepartmentName: TRAINING
   SubList:
   - Training Centre
