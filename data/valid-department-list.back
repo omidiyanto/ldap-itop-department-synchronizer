@@ -139,7 +139,8 @@
   - ""
 - DepartmentName: TRAINING
   SubList:
-  - ""
+  - Training Centre
+  - Training
 - DepartmentName: TCL ATAS
   SubList:
   - TCL
