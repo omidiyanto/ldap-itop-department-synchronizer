@@ -16,6 +16,7 @@
 - DepartmentName: FINANCE INTERNAL AUDITOR
   SubList:
   - IA Finance
+  - Finance IA
 - DepartmentName: FINANCE / TAX
   SubList:
   - Finance Dept
