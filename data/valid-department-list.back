@@ -1,6 +1,6 @@
 - DepartmentName: ATSN
   SubList:
-  - ""
+  - ATI
 - DepartmentName: DIGI
   SubList:
   - Digi
@@ -98,6 +98,8 @@
 - DepartmentName: PID
   SubList:
   - PID
+  - PID Dept.
+  - PID Dept
 - DepartmentName: PEGATRON
   SubList:
   - Pegatron
@@ -109,12 +111,10 @@
   SubList:
   - SMT Dept
   - SMT
-- DepartmentName: Coin Battery Packaging
+- DepartmentName: Murata
   SubList:
-  - ""
-- DepartmentName: Lithium Battery
-  SubList:
-  - ""
+  - Coin Battery Packaging
+  - Lithium Battery
 - DepartmentName: TOA
   SubList:
   - TOA Dept
