@@ -10,7 +10,9 @@
   - ""
 - DepartmentName: DESAY
   SubList:
-  - ""
+  - Desaysv 
+  - Desay Dept
+  - Desaysv Dept
 - DepartmentName: FINANCE INTERNAL AUDITOR
   SubList:
   - IA Finance
@@ -77,7 +79,7 @@
   - IT ERP & In-House
 - DepartmentName: CORPSEC
   SubList:
-  - ""
+  - Corporate Secretary
 - DepartmentName: LTE
   SubList:
   - LTE Dept
