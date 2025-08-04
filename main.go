@@ -63,10 +63,10 @@ func main() {
 
 	client, err := ldapclient.NewLDAPClient()
 	if err != nil {
-		log.Fatalf("LDAP auth failed: %v", err)
+		log.Fatalf("[Error] LDAP auth failed: %v", err)
 	}
 	defer client.Close()
-	log.Println("LDAP authentication successful.")
+	log.Println("[OK] LDAP authentication successful.")
 
 	searchRequest := ldap.NewSearchRequest(
 		baseDN,
@@ -93,9 +93,9 @@ func main() {
 	threshold := 1.00 // Jaro-Winkler similarity threshold
 	err = parser.ValidateAndAssignDepartment(users, yamlPath, usersOut, reportOut, threshold)
 	if err != nil {
-		log.Fatalf("Department validation failed: %v", err)
+		log.Fatalf("[Error] Department validation failed: %v", err)
 	}
-	log.Println("Department validation complete.")
+	log.Println("[OK] Department validation complete.")
 
 	reportBytes, _ := ioutil.ReadFile(reportOut)
 
@@ -110,22 +110,22 @@ func main() {
 	// Test iTop authentication
 	authErr := itopClient.Authenticate()
 	if authErr != nil {
-		log.Fatalf("iTop authentication failed: %v", authErr)
+		log.Fatalf("[Error] iTop authentication failed: %v", authErr)
 	} else {
-		log.Println("iTop authentication successful.")
+		log.Println("[OK] iTop authentication successful.")
 	}
 	err = synchronizer.SyncTeamsToItop(yamlPath, itopClient, orgID)
 	if err != nil {
-		log.Fatalf("Team/Department sync failed: %v", err)
+		log.Fatalf("[Error] Team/Department sync failed: %v", err)
 	}
-	log.Println("Teams/Departments synced successfully.")
+	log.Println("[OK] Teams/Departments synced successfully.")
 
 	notSyncedCSV := "output/user-not-synchronized.csv"
 	err = synchronizer.SyncUsersToTeams(usersOut, yamlPath, notSyncedCSV, itopClient)
 	if err != nil {
-		log.Fatalf("User sync failed: %v", err)
+		log.Fatalf("[Error] User sync failed: %v", err)
 	}
-	log.Println("Users synced successfully.")
+	log.Println("[OK] Users synced successfully.")
 
 	notSyncedBytes, _ := ioutil.ReadFile(notSyncedCSV)
 	var userXlsx []byte
@@ -146,9 +146,9 @@ func main() {
 		}
 		err := helper.SendErrorMail(subject, body, attachments)
 		if err != nil {
-			log.Printf("Failed to send email: %v", err)
+			log.Printf("[Error] Failed to send email: %v", err)
 		} else {
-			log.Println("Email sent.")
+			log.Println("[OK] Email sent successfully.")
 		}
 	}
 }

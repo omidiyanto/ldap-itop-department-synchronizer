@@ -106,7 +106,7 @@ func SyncUsersToTeams(usersCSV, yamlPath, notSyncedCSV string, client *itopclien
 	successSyncedW.Write([]string{"nama", "email", "team_id", "status"})
 
 	for _, user := range users {
-		log.Printf("Processing user: %s (%s) - ValidDepartment: %s", user.CN, user.Email, user.ValidDepartment)
+		log.Printf("[In-Progress] Processing user: %s (%s) - Department: %s", user.CN, user.Email, user.ValidDepartment)
 		team, ok := teamMap[user.ValidDepartment]
 		if !ok || team.TeamID == "" {
 			notSyncedW.Write([]string{user.CN, user.Email, "No TeamID mapping for department: " + user.ValidDepartment})
