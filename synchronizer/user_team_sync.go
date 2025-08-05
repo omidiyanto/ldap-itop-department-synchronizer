@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 
 	itopclient "ldap-itop/itopclient"
 
@@ -29,6 +30,18 @@ type TeamYAML struct {
 type TeamYAMLList []TeamYAML
 
 func SyncUsersToTeams(usersCSV, yamlPath, notSyncedCSV string, client *itopclient.ITopClient) error {
+	// Ambil exclude list dari env var
+	excludeRaw := os.Getenv("EXCLUDE_LIST")
+	excludeMap := make(map[string]bool)
+	if excludeRaw != "" {
+		excludeArr := strings.Split(excludeRaw, ";")
+		for _, cn := range excludeArr {
+			trimmed := strings.TrimSpace(cn)
+			if trimmed != "" {
+				excludeMap[trimmed] = true
+			}
+		}
+	}
 	// Load users.csv
 	f, err := os.Open(usersCSV)
 	if err != nil {
@@ -106,6 +119,10 @@ func SyncUsersToTeams(usersCSV, yamlPath, notSyncedCSV string, client *itopclien
 	successSyncedW.Write([]string{"nama", "email", "team_id", "status"})
 
 	for _, user := range users {
+		if excludeMap[user.CN] {
+			log.Printf("[SKIP] User '%s' di-exclude dari sinkronisasi.", user.CN)
+			continue
+		}
 		log.Printf("[In-Progress] Processing user: %s (%s) - Department: %s", user.CN, user.Email, user.ValidDepartment)
 		team, ok := teamMap[user.ValidDepartment]
 		if !ok || team.TeamID == "" {
