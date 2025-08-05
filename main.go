@@ -97,11 +97,18 @@ func main() {
 	}
 	log.Println("[OK] Department validation complete.")
 
+	// Cek isi dept-validation-errors-report.csv
+	deptHasData := false
 	reportBytes, _ := ioutil.ReadFile(reportOut)
-
-	// Convert CSV to XLSX if error
-	var deptXlsx []byte
 	if len(reportBytes) > 0 {
+		reader := csv.NewReader(strings.NewReader(string(reportBytes)))
+		records, _ := reader.ReadAll()
+		if len(records) > 1 {
+			deptHasData = true
+		}
+	}
+	var deptXlsx []byte
+	if deptHasData {
 		deptXlsx = toXLSX(reportBytes)
 	}
 
@@ -127,21 +134,29 @@ func main() {
 	}
 	log.Println("[OK] Users synced successfully.")
 
+	userHasData := false
 	notSyncedBytes, _ := ioutil.ReadFile(notSyncedCSV)
-	var userXlsx []byte
 	if len(notSyncedBytes) > 0 {
+		reader := csv.NewReader(strings.NewReader(string(notSyncedBytes)))
+		records, _ := reader.ReadAll()
+		if len(records) > 1 {
+			userHasData = true
+		}
+	}
+	var userXlsx []byte
+	if userHasData {
 		userXlsx = toXLSX(notSyncedBytes)
 	}
 
-	// Send email if any errors
-	if len(deptXlsx) > 0 || len(userXlsx) > 0 {
+	// Send email only if ada data error
+	if deptHasData || userHasData {
 		subject := os.Getenv("EMAIL_SUBJECT")
-		body := buildEmailBody(len(deptXlsx) > 0, len(userXlsx) > 0)
+		body := buildEmailBody(deptHasData, userHasData)
 		attachments := map[string][]byte{}
-		if len(deptXlsx) > 0 {
+		if deptHasData {
 			attachments["dept-validation-errors-report.xlsx"] = deptXlsx
 		}
-		if len(userXlsx) > 0 {
+		if userHasData {
 			attachments["user-not-synchronized.xlsx"] = userXlsx
 		}
 		err := helper.SendErrorMail(subject, body, attachments)
