@@ -105,7 +105,7 @@ func SyncUsersToTeams(usersCSV, yamlPath, notSyncedCSV string, client *itopclien
 	defer notSyncedF.Close()
 	notSyncedW := csv.NewWriter(notSyncedF)
 	defer notSyncedW.Flush()
-	notSyncedW.Write([]string{"nama", "email", "status"})
+	notSyncedW.Write([]string{"nama", "email", "sAMAccountName", "status"})
 
 	// Prepare successfully-synced CSV
 	successSyncedCSV := "output/user-successfully-sync.csv"
@@ -126,7 +126,7 @@ func SyncUsersToTeams(usersCSV, yamlPath, notSyncedCSV string, client *itopclien
 		log.Printf("[In-Progress] Processing user: %s (%s) - Department: %s", user.CN, user.Email, user.ValidDepartment)
 		team, ok := teamMap[user.ValidDepartment]
 		if !ok || team.TeamID == "" {
-			notSyncedW.Write([]string{user.CN, user.Email, "No TeamID mapping for department: " + user.ValidDepartment})
+			notSyncedW.Write([]string{user.CN, user.Email, user.SAMAccountName, "No TeamID mapping for department: " + user.ValidDepartment})
 			continue
 		}
 		userID := ""
@@ -160,7 +160,7 @@ func SyncUsersToTeams(usersCSV, yamlPath, notSyncedCSV string, client *itopclien
 			}
 		}
 		if userID == "" {
-			notSyncedW.Write([]string{user.CN, user.Email, "User not found in iTop (by login)"})
+			notSyncedW.Write([]string{user.CN, user.Email, user.SAMAccountName, "User not found in iTop (by login)"})
 			continue
 		}
 		resp, err := client.Post("core/get", map[string]interface{}{
@@ -216,12 +216,12 @@ func SyncUsersToTeams(usersCSV, yamlPath, notSyncedCSV string, client *itopclien
 			},
 		})
 		if err != nil {
-			notSyncedW.Write([]string{user.CN, user.Email, "Failed to add to team: " + err.Error()})
+			notSyncedW.Write([]string{user.CN, user.Email, user.SAMAccountName, "Failed to add to team: " + err.Error()})
 			continue
 		}
 		var updateMap map[string]interface{}
 		if err := json.Unmarshal(updateResp, &updateMap); err != nil {
-			notSyncedW.Write([]string{user.CN, user.Email, "Failed to parse update response: " + err.Error()})
+			notSyncedW.Write([]string{user.CN, user.Email, user.SAMAccountName, "Failed to parse update response: " + err.Error()})
 			continue
 		}
 		code, _ := updateMap["code"].(float64)
@@ -253,7 +253,7 @@ func SyncUsersToTeams(usersCSV, yamlPath, notSyncedCSV string, client *itopclien
 		} else {
 			failMsg += "unknown error or user not present in persons_list after update"
 		}
-		notSyncedW.Write([]string{user.CN, user.Email, failMsg})
+		notSyncedW.Write([]string{user.CN, user.Email, user.SAMAccountName, failMsg})
 	}
 
 	return nil
